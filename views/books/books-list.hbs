@@ -6,7 +6,8 @@
 {{#each books}}
     <div>
         <h3>{{title}}</h3>
-        <p>By: {{author}}</p>
+        <p>Author: {{this.author.name}}</p>
+        <p>Rating: {{this.rating}}</p>
         <a href="/books/{{_id}}">See details</a>
         <a href="/books/{{_id}}/edit">Edit</a>
         

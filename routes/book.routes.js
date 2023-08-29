@@ -1,6 +1,7 @@
 const router = require('express').Router()
 
 const Book = require('../models/Book.model')
+const Author = require('../models/Author.model')
 
 // GET route to display the form
 router.get('/books/create', (req, res, next) => {
@@ -41,6 +42,7 @@ router.post('/books/:bookId/edit', (req, res, next) =>{
 
 
     Book.findByIdAndUpdate(bookId,{title, description, author, rating}, {new: true})
+    .populate("author")
     .then(updatedBook => {
         res.redirect(`/books/${updatedBook.id}`)
     })
@@ -61,6 +63,7 @@ router.post('/books/:bookId/delete', (req, res, next) => {
 router.get('/books', (req, res, next) => {
     
     Book.find()
+    .populate("author") //ask mongoose to populate document instead of id/ modify the res you got from mongoose
     .then(allTheBooksFromDB => {
         console.log('Retrieved books from DB:', allTheBooksFromDB );
 
@@ -78,6 +81,7 @@ router.get('/books/:bookId', (req, res) => {
 const { bookId } = req.params
 
 Book.findById(bookId)
+.populate("author")
 .then(theBook => res.render('books/book-details.hbs', {book: theBook}))
 .catch(error => {
     console.log("Error while retrieving book details: ", error);
