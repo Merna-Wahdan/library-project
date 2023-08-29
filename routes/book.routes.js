@@ -5,7 +5,17 @@ const Author = require('../models/Author.model')
 
 // GET route to display the form
 router.get('/books/create', (req, res, next) => {
-    res.render('books/book-create.hbs')
+    Author.find()
+    .then(authorsFromDb => {
+        const data = {
+            authors: authorsFromDb
+        }
+        res.render('books/book-create.hbs', data )
+    })
+    .catch((e) => {
+        console.log("Error getting list of authors from DB", e);
+        next(e);
+    });
 })
 
 // POST route to save a new book to the database in the books collection
