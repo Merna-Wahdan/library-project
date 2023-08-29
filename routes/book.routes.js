@@ -24,6 +24,39 @@ router.post('/books/create', (req, res, next) => {
     .catch(error => next(error));
 });
 
+
+router.get('/books/:bookId/edit', (req, res, next) => {
+    const {bookId} = req.params
+
+    Book.findById(bookId)
+    .then(editBook => {
+        res.render('books/book-edit.hbs', {book: editBook})
+    })
+    .catch(e => next(e))
+})
+
+router.post('/books/:bookId/edit', (req, res, next) =>{
+    const {bookId} = req.params
+    const {title, description, author, rating} = req.body
+
+
+    Book.findByIdAndUpdate(bookId,{title, description, author, rating}, {new: true})
+    .then(updatedBook => {
+        res.redirect(`/books/${updatedBook.id}`)
+    })
+    .catch(e => next(e))
+})
+
+
+router.post('/books/:bookId/delete', (req, res, next) => {
+    const {bookId} = req.params
+
+    Book.findByIdAndDelete(bookId)
+    .then(() => res.redirect('/books'))
+    .catch(e => next(e))
+})
+
+
 // GET route to retrieve and display all the books
 router.get('/books', (req, res, next) => {
     
