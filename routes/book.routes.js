@@ -3,8 +3,10 @@ const router = require('express').Router()
 const Book = require('../models/Book.model')
 const Author = require('../models/Author.model')
 
+const isLoggedIn = require('../middleware/isLoggedIn')
+
 // GET route to display the form
-router.get('/books/create', (req, res, next) => {
+router.get('/books/create', isLoggedIn, (req, res, next) => {
     Author.find()
     .then(authorsFromDb => {
         const data = {
@@ -19,7 +21,7 @@ router.get('/books/create', (req, res, next) => {
 })
 
 // POST route to save a new book to the database in the books collection
-router.post('/books/create', (req, res, next) => {
+router.post('/books/create', isLoggedIn, (req, res, next) => {
 
     const newBook = {
         title: req.body.title,
@@ -36,17 +38,26 @@ router.post('/books/create', (req, res, next) => {
 });
 
 
-router.get('/books/:bookId/edit', (req, res, next) => {
+router.get('/books/:bookId/edit', isLoggedIn, async (req, res, next) => {
     const {bookId} = req.params
 
-    Book.findById(bookId)
-    .then(editBook => {
-        res.render('books/book-edit.hbs', {book: editBook})
-    })
-    .catch(e => next(e))
+    try{
+        const bookDetails = await Book.findById(bookId)
+        const authors = await Author.find()
+
+        const data = {
+            book: bookDetails,
+            author: authors,
+        }
+        res.render('books/book-edit.hbs', data)
+    }
+
+    catch(error){
+        next(error)
+    }
 })
 
-router.post('/books/:bookId/edit', (req, res, next) =>{
+router.post('/books/:bookId/edit', isLoggedIn, (req, res, next) =>{
     const {bookId} = req.params
     const {title, description, author, rating} = req.body
 
@@ -60,7 +71,7 @@ router.post('/books/:bookId/edit', (req, res, next) =>{
 })
 
 
-router.post('/books/:bookId/delete', (req, res, next) => {
+router.post('/books/:bookId/delete', isLoggedIn, (req, res, next) => {
     const {bookId} = req.params
 
     Book.findByIdAndDelete(bookId)
@@ -68,6 +79,8 @@ router.post('/books/:bookId/delete', (req, res, next) => {
     .catch(e => next(e))
 })
 
+
+    
 
 // GET route to retrieve and display all the books
 router.get('/books', (req, res, next) => {

@@ -6,7 +6,7 @@ const bookSchema = new Schema(
     description: String,
     rating: Number,
     author: {
-      type: Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId, //here i am gonna store an object Id
       ref: "Author",
     },
   },

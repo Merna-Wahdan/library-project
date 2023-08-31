@@ -1,5 +1,7 @@
 const router = require('express').Router()
 const Author = require('../models/Author.model')
+const isLoggedIn = require('../middleware/isLoggedIn')
+
 
 router.get('/authors', (req, res, next) => {
     Author.find()
